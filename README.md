@@ -5,7 +5,6 @@ This project contains end-to-end (E2E) tests written using [Cypress](https://www
 ## Project Structure
 
 - `cypress/e2e/1-getting-started/` — Beginner test examples
-- `cypress/e2e/2-advanced-examples/` — Advanced test examples
 - `cypress/fixtures/` — Test data files
 - `cypress/support/` — Custom commands and support utilities
 - `cypress.config.js` — Cypress configuration file
@@ -16,6 +15,11 @@ This project contains end-to-end (E2E) tests written using [Cypress](https://www
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (v12 or higher recommended)
 - [npm](https://www.npmjs.com/)
+
+## To use drag and drop functionality
+```sh
+npm install --save-dev cypress-drag-drop
+```
 
 ### Installation
 1. Clone this repository or download the project files.
