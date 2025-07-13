@@ -3,6 +3,9 @@ import 'cypress-drag-drop';
 
 Cypress.on('uncaught:exception', (err, runnable) => {
   // returning false prevents Cypress from failing the test due to any uncaught exception
+  if (err.message.includes('adsbygoogle.push() error')) {
+    return false;
+  }
   return false;
 });
 
