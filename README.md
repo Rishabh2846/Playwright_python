@@ -1,67 +1,60 @@
-# Cypress End-to-End Testing Project
 
-This project contains end-to-end (E2E) tests written using [Cypress](https://www.cypress.io/). It is organized to help you learn, write, and run automated browser tests for web applications.
+# Selenium Python BDD Testing Project
+
+This project contains end-to-end (E2E) tests written using Selenium WebDriver with Python, following the BDD (Behavior-Driven Development) approach using Behave.
 
 ## Project Structure
 
-- `cypress/e2e/1-getting-started/` — Beginner test examples
-- `cypress/fixtures/` — Test data files
-- `cypress/support/` — Custom commands and support utilities
-- `cypress.config.js` — Cypress configuration file
-- `package.json` — Project dependencies and scripts
+- `features/` — Contains all BDD feature files and step definitions
+- `features/steps/` — Step implementation files for Behave
+- `test_*.py` — Standalone Selenium Python scripts (if any)
 
 ## Getting Started
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v12 or higher recommended)
-- [npm](https://www.npmjs.com/)
-
-## To use drag and drop functionality
-```sh
-npm install --save-dev cypress-drag-drop
-```
+- Python 3.7+
+- pip (Python package manager)
+- Google Chrome browser
+- ChromeDriver (compatible with your Chrome version)
 
 ### Installation
 1. Clone this repository or download the project files.
-2. Install dependencies:
+2. (Recommended) Create a virtual environment:
    ```sh
-   npm install
+   python -m venv venv
+   venv\Scripts\activate  # On Windows
+   ```
+3. Install dependencies:
+   ```sh
+   pip install -r requirements.txt
    ```
 
-### Running Tests
-To open the Cypress Test Runner:
+### Running BDD Tests
+To run all Behave BDD tests:
 ```sh
-npx cypress open
+behave
 ```
 
-To run tests in headless mode:
+To run a specific feature file:
 ```sh
-npx cypress run
-```
-
-To run test for only file in headless mode
-```sh
-npx cypress run --spec "C:\Users\Rishabh Sinha\Documents\cypress\cypress\e2e\1-getting-started\drag_drop.cy.js" --headless
-```
-To run test for only file in headed mode
-```sh
-npx cypress run --spec "C:\Users\Rishabh Sinha\Documents\cypress\cypress\e2e\1-getting-started\drag_drop.cy.js" --headed
+behave features/your_feature_file.feature
 ```
 
 ## Writing Tests
-- Add new test files in the `cypress/e2e/` directory.
-- Use the existing examples as a reference for writing your own tests.
+- Add new feature files in the `features/` directory.
+- Implement step definitions in `features/steps/`.
+- Use Selenium WebDriver for browser automation in your steps.
 
 ## Resources
-- [Cypress Documentation](https://docs.cypress.io/)
-- [Cypress Best Practices](https://docs.cypress.io/guides/references/best-practices)
+- [Behave Documentation](https://behave.readthedocs.io/en/stable/)
+- [Selenium with Python Docs](https://selenium-python.readthedocs.io/)
 
-=======
-# CI/CD Pipeline
-- CI/CD pipeline created using GITHUB actions 
-- Whenever there is a push action performed on this repository
-- pipeline will triggered
 ---
 
+# CI/CD Pipeline
+- CI/CD pipeline created using GitHub Actions
+- Whenever there is a push action performed on this repository, the pipeline will be triggered
 
-- Feel free to contribute or modify the tests as needed for your application!
+---
+
+Feel free to contribute or modify the tests as needed for your application!
