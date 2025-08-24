@@ -18,17 +18,18 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Xvfb and Microsoft Edge dependencies
+      - name: Install Xvfb and browser dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y xvfb libnss3 libgbm1 libasound2
+          sudo apt-get install -y xvfb libnss3 libgbm1
+          sudo apt-get install -y chromium-browser
 
-      - name: Setup Edge WebDriver
-        uses: browser-actions/setup-edge@latest
-      - name: Setup EdgeDriver
-        uses: browser-actions/setup-edge@latest
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
         with:
-          edge-driver: true
+          chrome-version: stable
+      - name: Setup ChromeDriver
+        uses: nanasess/setup-chromedriver@master
 
       - name: Install dependencies
         run: |
