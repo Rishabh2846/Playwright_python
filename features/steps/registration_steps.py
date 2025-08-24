@@ -1,5 +1,7 @@
 from behave import given, when, then
 from selenium import webdriver
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.support.ui import WebDriverWait
@@ -7,9 +9,9 @@ from selenium.webdriver.support import expected_conditions as EC
 
 @given('I am on the registration page')
 def step_impl(context):
-    service = ChromeService()
+    service = EdgeService()
     options = webdriver.ChromeOptions()
-    context.driver = webdriver.Chrome(service=service, options=options)
+    context.driver = webdriver.Edge(service=service, options=options)
     context.driver.get("https://practice.expandtesting.com/login")
     context.driver.find_element(By.CSS_SELECTOR, "a[href='/register']").click()
 

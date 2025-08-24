@@ -1,5 +1,7 @@
 import pytest
 from selenium import webdriver
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -9,10 +11,10 @@ from selenium.webdriver.support import expected_conditions as EC
 @pytest.fixture(scope="module")
 def driver():
     # Update the path to your chromedriver if needed
-    service = ChromeService()
+    service = EdgeService()
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')  # Remove if you want to see the browser
-    driver = webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Edge(service=service, options=options)
     yield driver
     driver.quit()
 

@@ -12,68 +12,44 @@ import time
 def step_impl(context):
     service = EdgeService()
     options = EdgeOptions()
-    # Keep only essential options
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument('--disable-gpu')
-    
     context.driver = webdriver.Edge(service=service, options=options)
     context.driver.maximize_window()
     context.driver.get("https://practice.expandtesting.com/drag-and-drop")
 
 @when('I drag column A to column B')
 def step_impl(context):
-    wait = WebDriverWait(context.driver, 5)  # Reduced wait time
+    wait = WebDriverWait(context.driver, 10)
     
+    # Get the source and target elements
+    source = wait.until(EC.presence_of_element_located((By.ID, "column-a")))
+    target = wait.until(EC.presence_of_element_located((By.ID, "column-b")))
+    
+    # Store initial texts for verification
+    context.initial_source_text = source.text
+    context.initial_target_text = target.text
+    
+    # Try standard drag and drop first
     try:
-        # Get the source and target elements
-        source = wait.until(EC.element_to_be_clickable((By.ID, "column-a")))
-        target = wait.until(EC.element_to_be_clickable((By.ID, "column-b")))
-        
-        # Store initial texts for verification
-        context.initial_source_text = source.text
-        context.initial_target_text = target.text
-        
-        # Try multiple drag and drop approaches
+        ActionChains(context.driver).drag_and_drop(source, target).perform()
+        time.sleep(1)
+        return
+    except:
+        pass
+    
+    # Try click-hold-move-release if standard method fails
+    try:
         actions = ActionChains(context.driver)
-        
-        # First try: Standard drag and drop
-        actions.drag_and_drop(source, target).perform()
-        time.sleep(0.5)
-        
-    except Exception as e:
-        print(f"Standard drag and drop failed: {str(e)}")
-        try:
-            # Second try: Click and hold, then release
-            actions.click_and_hold(source).move_to_element(target).release().perform()
-            time.sleep(0.5)
-        except Exception as e:
-            print(f"Click and hold method failed: {str(e)}")
-            # Final try: JavaScript method
-            js_drag_drop = """
-            function simulateDragDrop(source, target) {
-                const rect1 = source.getBoundingClientRect();
-                const rect2 = target.getBoundingClientRect();
-                
-                const dragStart = new DragEvent('dragstart', {
-                    clientX: rect1.x,
-                    clientY: rect1.y,
-                    bubbles: true
-                });
-                
-                const drop = new DragEvent('drop', {
-                    clientX: rect2.x,
-                    clientY: rect2.y,
-                    bubbles: true
-                });
-                
-                source.dispatchEvent(dragStart);
-                target.dispatchEvent(drop);
-            }
-            simulateDragDrop(arguments[0], arguments[1]);
-            """
-            context.driver.execute_script(js_drag_drop, source, target)
-            time.sleep(0.5)
+        actions.click_and_hold(source)\
+               .move_to_element(target)\
+               .release(target)\
+               .perform()
+        time.sleep(1)
+        return
+    except:
+        pass
     
     # Try JavaScript drag and drop as last resort
     js_drag_drop = """
@@ -130,7 +106,11 @@ def step_impl(context):
         source = wait.until(EC.presence_of_element_located((By.ID, "column-a")))
         target = wait.until(EC.presence_of_element_located((By.ID, "column-b")))
         
-
+        # Verify the swap
+        assert source.text == context.initial_target_text, \
+            f"Source column text mismatch. Expected: {context.initial_target_text}, Got: {source.text}"
+        assert target.text == context.initial_source_text, \
+            f"Target column text mismatch. Expected: {context.initial_source_text}, Got: {target.text}"
         
         print("Successfully verified column swap!")
     finally:

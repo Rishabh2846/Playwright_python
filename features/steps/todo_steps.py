@@ -1,13 +1,15 @@
 from behave import given, when, then
 from selenium import webdriver
+from selenium.webdriver.edge.service import Service as EdgeService
+from selenium.webdriver.edge.options import Options as EdgeOptions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service as ChromeService
 
 @given('I am on the todo app page')
 def step_impl(context):
-    service = ChromeService()
+    service = EdgeService()
     options = webdriver.ChromeOptions()
-    context.driver = webdriver.Chrome(service=service, options=options)
+    context.driver = webdriver.Edge(service=service, options=options)
     context.driver.get("https://example.cypress.io/todo")
 
 @then('I should see 2 default todos')
