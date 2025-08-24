@@ -18,22 +18,17 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install Microsoft Edge
+      - name: Install Xvfb and Microsoft Edge dependencies
         run: |
-          curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-          sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
-          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-stable.list'
-          sudo rm microsoft.gpg
-          sudo apt update
-          sudo apt install microsoft-edge-stable
+          sudo apt-get update
+          sudo apt-get install -y xvfb libnss3 libgbm1 libasound2
 
-      - name: Install Edge WebDriver
-        run: |
-          EDGE_VERSION=$(microsoft-edge --version | cut -d' ' -f3)
-          wget https://msedgedriver.azureedge.net/$EDGE_VERSION/edgedriver_linux64.zip
-          unzip edgedriver_linux64.zip
-          sudo mv msedgedriver /usr/local/bin/
-          rm edgedriver_linux64.zip
+      - name: Setup Edge WebDriver
+        uses: browser-actions/setup-edge@latest
+      - name: Setup EdgeDriver
+        uses: browser-actions/setup-edge@latest
+        with:
+          edge-driver: true
 
       - name: Install dependencies
         run: |
