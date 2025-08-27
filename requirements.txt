@@ -1,2 +1,5 @@
-selenium
+playwright
 behave
+pytest-playwright
+pytest-bdd
+pytest

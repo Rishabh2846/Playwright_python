@@ -1,137 +1,59 @@
 from behave import given, when, then
-from selenium import webdriver
-from selenium.webdriver.edge.service import Service as EdgeService
-from selenium.webdriver.edge.options import Options as EdgeOptions
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
 import time
 
 @given('I am on the drag and drop page')
 def step_impl(context):
-    service = EdgeService()
-    options = EdgeOptions()
-    # Keep only essential options
-    options.add_argument('--no-sandbox')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument('--disable-gpu')
-    
-    context.driver = webdriver.Edge(service=service, options=options)
-    context.driver.maximize_window()
-    context.driver.get("https://practice.expandtesting.com/drag-and-drop")
+    context.page.goto("https://practice.expandtesting.com/drag-and-drop")
+    # Wait for the page to be fully loaded
+    context.page.wait_for_load_state("networkidle")
 
 @when('I drag column A to column B')
 def step_impl(context):
-    wait = WebDriverWait(context.driver, 5)  # Reduced wait time
+    # Get the source and target elements
+    source = context.page.locator("#column-a")
+    target = context.page.locator("#column-b")
+    
+    # Store initial texts for verification
+    context.initial_source_text = source.inner_text()
+    context.initial_target_text = target.inner_text()
     
     try:
-        # Get the source and target elements
-        source = wait.until(EC.element_to_be_clickable((By.ID, "column-a")))
-        target = wait.until(EC.element_to_be_clickable((By.ID, "column-b")))
-        
-        # Store initial texts for verification
-        context.initial_source_text = source.text
-        context.initial_target_text = target.text
-        
-        # Try multiple drag and drop approaches
-        actions = ActionChains(context.driver)
-        
-        # First try: Standard drag and drop
-        actions.drag_and_drop(source, target).perform()
+        # First try: Use Playwright's native drag and drop
+        source.drag_to(target)
         time.sleep(0.5)
-        
     except Exception as e:
-        print(f"Standard drag and drop failed: {str(e)}")
-        try:
-            # Second try: Click and hold, then release
-            actions.click_and_hold(source).move_to_element(target).release().perform()
-            time.sleep(0.5)
-        except Exception as e:
-            print(f"Click and hold method failed: {str(e)}")
-            # Final try: JavaScript method
-            js_drag_drop = """
-            function simulateDragDrop(source, target) {
-                const rect1 = source.getBoundingClientRect();
-                const rect2 = target.getBoundingClientRect();
-                
-                const dragStart = new DragEvent('dragstart', {
-                    clientX: rect1.x,
-                    clientY: rect1.y,
-                    bubbles: true
-                });
-                
-                const drop = new DragEvent('drop', {
-                    clientX: rect2.x,
-                    clientY: rect2.y,
-                    bubbles: true
-                });
-                
-                source.dispatchEvent(dragStart);
-                target.dispatchEvent(drop);
-            }
-            simulateDragDrop(arguments[0], arguments[1]);
-            """
-            context.driver.execute_script(js_drag_drop, source, target)
-            time.sleep(0.5)
-    
-    # Try JavaScript drag and drop as last resort
-    js_drag_drop = """
-    function createEvent(typeOfEvent) {
-        var event = document.createEvent("CustomEvent");
-        event.initCustomEvent(typeOfEvent, true, true, null);
-        event.dataTransfer = {
-            data: {},
-            setData: function (key, value) {
-                this.data[key] = value;
-            },
-            getData: function (key) {
-                return this.data[key];
-            }
-        };
-        return event;
-    }
-    
-    function dispatchEvent(element, event, transferData) {
-        if (transferData !== undefined) {
-            event.dataTransfer = transferData;
-        }
-        if (element.dispatchEvent) {
-            element.dispatchEvent(event);
-        } else if (element.fireEvent) {
-            element.fireEvent("on" + event.type, event);
-        }
-    }
-    
-    function simulateDragDrop(source, target) {
-        var dragStartEvent = createEvent('dragstart');
-        dispatchEvent(source, dragStartEvent);
+        print(f"Native drag and drop failed: {str(e)}")
+        # Fallback to mouse events
+        source_box = source.bounding_box()
+        target_box = target.bounding_box()
         
-        var dropEvent = createEvent('drop');
-        dispatchEvent(target, dropEvent, dragStartEvent.dataTransfer);
-        
-        var dragEndEvent = createEvent('dragend');
-        dispatchEvent(source, dragEndEvent, dropEvent.dataTransfer);
-    }
-    
-    var source = arguments[0];
-    var target = arguments[1];
-    simulateDragDrop(source, target);
-    """
-    context.driver.execute_script(js_drag_drop, source, target)
-    time.sleep(1)
+        context.page.mouse.move(
+            source_box["x"] + source_box["width"] / 2,
+            source_box["y"] + source_box["height"] / 2
+        )
+        context.page.mouse.down()
+        context.page.mouse.move(
+            target_box["x"] + target_box["width"] / 2,
+            target_box["y"] + target_box["height"] / 2
+        )
+        context.page.mouse.up()
+        time.sleep(0.5)
 
 @then('the columns should be swapped')
 def step_impl(context):
-    try:
-        wait = WebDriverWait(context.driver, 10)
-        
-        # Get the final state of columns
-        source = wait.until(EC.presence_of_element_located((By.ID, "column-a")))
-        target = wait.until(EC.presence_of_element_located((By.ID, "column-b")))
-        
-
-        
-        print("Successfully verified column swap!")
-    finally:
-        context.driver.quit()
+    # Get the elements again after drag and drop
+    source = context.page.locator("#column-a")
+    target = context.page.locator("#column-b")
+    
+    # Wait for potential animations to complete
+    context.page.wait_for_timeout(1000)
+    
+    # Get the current text of both elements
+    source_text = source.inner_text()
+    target_text = target.inner_text()
+    
+    # Verify that the texts have been swapped
+    assert source_text == context.initial_target_text, \
+        f"Expected source text to be {context.initial_target_text}, but got {source_text}"
+    assert target_text == context.initial_source_text, \
+        f"Expected target text to be {context.initial_source_text}, but got {target_text}"

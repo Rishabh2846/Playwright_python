@@ -5,7 +5,7 @@ Feature: Login functionality
     Given I am on the login page
     When I enter username "<username>" and password "<password>"
     And I click the login button
-    Then I should see "<expected>"
+    Then I should see login message "<expected>"
 
     Examples:
       | username  | password              | expected                              |
