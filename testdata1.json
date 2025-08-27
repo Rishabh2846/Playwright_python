@@ -1,0 +1,12 @@
+{
+    "valid_login": {
+        "username": "admin",
+        "password": "admin123",
+        "expected_message": "Welcome admin"
+    },
+    "invalid_login": {
+        "username": "invalid_user",
+        "password": "invalid_pass",
+        "expected_message": "Invalid credentials"
+    }
+}
