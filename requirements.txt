@@ -1,7 +1,0 @@
-playwright
-behave
-pytest-playwright
-pytest-bdd
-pytest
-selenium
-webdriver-manager

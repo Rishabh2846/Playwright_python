@@ -1,0 +1,22 @@
+{
+  "name": "playwright_python",
+  "version": "1.0.0",
+  "description": "This project contains end-to-end (E2E) tests written using Playwright with Python, following the BDD (Behavior-Driven Development) approach using Behave.",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rishabh2846/Selenium_python.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rishabh2846/Selenium_python/issues"
+  },
+  "homepage": "https://github.com/Rishabh2846/Selenium_python#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^24.3.0"
+  }
+}
