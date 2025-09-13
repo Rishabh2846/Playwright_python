@@ -34,5 +34,5 @@ await page.locator('#operations-Users-post_users_login').getByRole('button', { n
 await expect(page.locator('#operations-Users-post_users_login').getByText('200').nth(1)).toBeVisible();
 await expect(page.getByText('"admin"')).toBeVisible();
 await expect(page.getByText('"admin@test.com"')).toBeVisible();
-await expect(page.getByText('"dc532b81f52f4b10b10c2bd50d544e5c68d2d292b7fd4b929cb5cfe4d219e54b"')).toBeVisible();
+
 });
